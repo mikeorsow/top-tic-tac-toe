@@ -10,6 +10,12 @@ const gameboard = (() => {
     _boardMoves[index] = value;
     display();
   };
+  // Click listener to turn board clicks into moves
+  _gameboardDivs.forEach((square) =>
+    square.addEventListener('click', (e) => {
+      gameFlow.move(e.target.dataset.index);
+    })
+  );
   return {
     display,
     addMove,
@@ -20,13 +26,13 @@ const gameboard = (() => {
 const player = (name, moveType) => {
   const getName = () => name;
   const getMoveType = () => moveType;
-//   const move = (boardIndex) => {
-//     gameboard.addMove(boardIndex, moveType);
-//     gameFlow.nextMove;
-//   };
+  //   const move = (boardIndex) => {
+  //     gameboard.addMove(boardIndex, moveType);
+  //     gameFlow.nextMove;
+  //   };
   return {
     getName,
-    getMoveType
+    getMoveType,
   };
 };
 
@@ -54,7 +60,7 @@ const gameFlow = (() => {
   };
   return {
     nextMove,
-    move
+    move,
   };
 })();
 

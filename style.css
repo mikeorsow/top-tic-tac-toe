@@ -29,4 +29,5 @@ h1 {
     align-items: center;
     justify-content: center;
     background-color: white;
+    cursor: pointer;
 }
