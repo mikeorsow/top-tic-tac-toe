@@ -12,9 +12,13 @@ const gameboard = (() => {
   };
   // Click listener to turn board clicks into moves
   _gameboardDivs.forEach((square) =>
-    square.addEventListener('click', (e) => {
-      gameFlow.move(e.target.dataset.index);
-    })
+    square.addEventListener(
+      'click',
+      (e) => {
+        gameFlow.move(e.target.dataset.index);
+      },
+      { once: true }
+    )
   );
   return {
     display,
