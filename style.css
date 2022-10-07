@@ -12,6 +12,8 @@ h1 {
 .gameboard-container {
     display: grid;
     justify-content: center;
+    justify-items: center;
+    gap: 40px;
 }
 
 .gameboard {
@@ -29,5 +31,20 @@ h1 {
     align-items: center;
     justify-content: center;
     background-color: white;
+}
+
+.reset-button {
+    padding: 12px 20px;
+    background-color: rgb(40, 40, 40);
+    font-weight: 600;
+    border-radius: 4px;
+    color: #fff;
+    
+}
+
+.gameboard div,
+.reset-button {
+    user-select: none;
+    -webkit-user-select: none;
     cursor: pointer;
 }
