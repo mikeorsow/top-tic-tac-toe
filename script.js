@@ -46,12 +46,12 @@ const gameboard = (() => {
 })();
 
 // Player Factory
-const player = (name, moveType) => {
+const player = (name, moveSymbol) => {
   const getName = () => name;
-  const getMoveType = () => moveType;
+  const getMoveSymbol = () => moveSymbol;
   return {
     getName,
-    getMoveType,
+    getMoveSymbol,
   };
 };
 
@@ -61,27 +61,22 @@ const gameFlow = (() => {
   const player1 = player('James', 'x');
   const player2 = player('Laura', 'o');
 
-  // Move Count
-  let moveCount = 0;
-  const nextMove = () => {
-    moveCount++;
-  };
+  let currentPlayer = player1;
 
-  const getCurrentMoveType = () => {
-    if (moveCount % 2 === 0) {
-      return player1.getMoveType();
+  const nextPlayer = () => {
+    if (currentPlayer === player1) {
+      return (currentPlayer = player2);
     }
-    return player2.getMoveType();
+    return (currentPlayer = player1);
   };
 
   const move = (boardIndex) => {
-    gameboard.addMove(boardIndex, getCurrentMoveType());
-    nextMove();
+    gameboard.addMove(boardIndex, currentPlayer.getMoveSymbol());
+    nextPlayer();
   };
 
   return {
-    nextMove,
-    move,
+    move
   };
 })();
 
