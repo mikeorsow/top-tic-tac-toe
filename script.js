@@ -20,10 +20,42 @@ const gameboard = (() => {
 const player = (name, moveType) => {
   const getName = () => name;
   const getMoveType = () => moveType;
+//   const move = (boardIndex) => {
+//     gameboard.addMove(boardIndex, moveType);
+//     gameFlow.nextMove;
+//   };
   return {
     getName,
-    getMoveType,
+    getMoveType
   };
 };
+
+// Players
+
+// Game Flow Module
+const gameFlow = (() => {
+  // Players
+  const player1 = player('James', 'x');
+  const player2 = player('Laura', 'o');
+  // Move Count
+  let moveCount = 0;
+  const nextMove = () => {
+    moveCount++;
+  };
+  const getCurrentMoveType = () => {
+    if (moveCount % 2 === 0) {
+      return player1.getMoveType();
+    }
+    return player2.getMoveType();
+  };
+  const move = (boardIndex) => {
+    gameboard.addMove(boardIndex, getCurrentMoveType());
+    nextMove();
+  };
+  return {
+    nextMove,
+    move
+  };
+})();
 
 gameboard.display();
