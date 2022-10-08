@@ -29,8 +29,28 @@ const gameboard = (() => {
   };
 
   const checkWinner = (currentMoveSymbol, moveCount) => {
-    console.log('checkWinner called');
+    let winnerFound = false;
+    const youWinMessage = () => {
+      winnerFound = true;
+      console.log('Winner!!!!');
+      // Users should not be able to add more moves to the board once a winner is set
+      _gameboardDivs.forEach((element) => {
+        element.removeEventListener('click', gameFlow.move, { once: true });
+      });
+    };
 
+    const isThreeInARow = (arr) => {
+      return arr.filter((move) => move === currentMoveSymbol).length === 3;
+    };
+
+    const isTie = () => {
+      if (moveCount < 9) {
+        return;
+      }
+      return winnerFound === false;
+    };
+
+    // Slice the moves into rows to easily calculate winner
     const topRow = _boardMoves.slice(0, 3);
     const middleRow = _boardMoves.slice(3, 6);
     const bottomRow = _boardMoves.slice(6, 9);
@@ -40,31 +60,12 @@ const gameboard = (() => {
       return column;
     };
 
+    // Create columns for readability in the switch statement below
     const column1 = getColumnMoves(0);
     const column2 = getColumnMoves(1);
     const column3 = getColumnMoves(2);
-
     const diagonalTopLeft = [topRow[0], middleRow[1], bottomRow[2]];
     const diagonalTopRight = [topRow[2], middleRow[1], bottomRow[0]];
-
-    let winnerFound = false;
-    
-    const youWinMessage = () => {
-      winnerFound = true;
-      console.log('Winner!!!!');
-      _gameboardDivs.forEach((element) => {
-        element.removeEventListener('click', gameFlow.move, { once: true });
-      });
-    };
-    const isThreeInARow = (arr) => {
-      return arr.filter((move) => move === currentMoveSymbol).length === 3;
-    };
-    const isTie = () => {
-      console.log(moveCount);
-      if (moveCount === 9 && winnerFound === false) {
-        return console.log(`It's a tie!!!!!`);
-      }
-    };
 
     switch (true) {
       case isThreeInARow(topRow):
@@ -77,11 +78,8 @@ const gameboard = (() => {
       case isThreeInARow(diagonalTopRight):
         youWinMessage();
         break;
-      default:
-        console.log(topRow);
-        console.log(middleRow);
-        console.log(bottomRow);
-        isTie();
+      case isTie():
+        console.log(`It's a bloody tie!`);
     }
   };
 
@@ -116,17 +114,17 @@ const gameFlow = (() => {
 
   const nextPlayer = () => {
     if (currentPlayer === player1) {
-      console.log('next player is player2');
+      // console.log('next player is player2');
       return (currentPlayer = player2);
     }
-    console.log('next player is player1');
+    // console.log('next player is player1');
     return (currentPlayer = player1);
   };
 
   const move = (e) => {
     const currentMoveSymbol = currentPlayer.getMoveSymbol();
     const boardIndex = e.target.dataset.index;
-    console.log('move called');
+    // console.log('move called');
     gameboard.addMove(boardIndex, currentMoveSymbol);
     nextPlayer();
     ++moveCount;

@@ -1,50 +1,49 @@
-
 body {
-    margin: 0px;
-    padding: 0px;
-    font-family: Arial, Helvetica, sans-serif;
+  margin: 0px;
+  padding: 0px;
+  font-family: Arial, Helvetica, sans-serif;
 }
 
 h1 {
-    text-align: center;
+  text-align: center;
 }
 
 .gameboard-container {
-    display: grid;
-    justify-content: center;
-    justify-items: center;
-    gap: 40px;
+  display: grid;
+  justify-content: center;
+  justify-items: center;
+  gap: 40px;
 }
 
 .gameboard {
-    font-size: 4rem;
-    display: grid;
-    grid-template-columns: 6rem 6rem 6rem;
-    grid-template-rows: 6rem 6rem 6rem;
-    gap: 8px;
-    background-color: black;
-    width: min-content;
+  font-size: 4rem;
+  display: grid;
+  grid-template-columns: 6rem 6rem 6rem;
+  grid-template-rows: 6rem 6rem 6rem;
+  gap: 8px;
+  background-color: black;
+  width: min-content;
 }
 
 .gameboard div {
-    display: grid;
-    align-items: center;
-    justify-content: center;
-    background-color: white;
+  position: relative;
+  display: grid;
+  align-items: center;
+  justify-content: center;
+  background-color: white;
 }
 
 .reset-button {
-    padding: 12px 20px;
-    background-color: rgb(40, 40, 40);
-    font-weight: 600;
-    border-radius: 4px;
-    color: #fff;
-    
+  padding: 12px 20px;
+  background-color: rgb(40, 40, 40);
+  font-weight: 600;
+  border-radius: 4px;
+  color: #fff;
 }
 
 .gameboard div,
 .reset-button {
-    user-select: none;
-    -webkit-user-select: none;
-    cursor: pointer;
+  user-select: none;
+  -webkit-user-select: none;
+  cursor: pointer;
 }
