@@ -8,11 +8,51 @@ h1 {
   text-align: center;
 }
 
+.container {
+    display: grid;
+    justify-content: center;
+}
+
+.scoreboard {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    width: 40vw;
+    min-width: 400px;
+    gap: 30px;
+}
+
+.player-container {
+    display: grid;
+    grid-template-rows: 2fr 2fr 1fr;
+    justify-content: center;
+    justify-items: center;
+    align-items: start;
+}
+
+.player-symbol {
+    font-size: 3rem;
+}
+
+.player-name {
+    font-size: 2rem;
+}
+
+.player-message {
+    font-size: 1.25rem;
+    font-weight: 600;
+    color: #337ce0;
+}
+
+.active-player {
+    border-bottom: #337ce0 solid 4px;
+}
+
 .gameboard-container {
   display: grid;
   justify-content: center;
   justify-items: center;
   gap: 40px;
+  margin-top: 20px;
 }
 
 .gameboard {
