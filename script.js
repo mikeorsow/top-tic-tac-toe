@@ -37,6 +37,7 @@ const gameboard = (() => {
       _gameboardDivs.forEach((element) => {
         element.removeEventListener('click', gameFlow.move, { once: true });
       });
+      return winnerFound;
     };
 
     const isThreeInARow = (arr) => {
@@ -112,12 +113,24 @@ const gameFlow = (() => {
   let currentPlayer = player1;
   let moveCount = 0;
 
-  const nextPlayer = () => {
+  const player1MessageDiv = document.querySelector('.player1-message');
+  const player2MessageDiv = document.querySelector('.player2-message');
+  const player1NameDiv = document.querySelector('.player1-name');
+  const player2NameDiv = document.querySelector('.player2-name');
+
+  const switchPlayer = () => {
+    const toggleClass = (target, className) => {
+      target.classList.toggle(className);
+    };
+
+    toggleClass(player1MessageDiv, 'hide-message');
+    toggleClass(player2MessageDiv, 'hide-message');
+    toggleClass(player1NameDiv, 'active-player');
+    toggleClass(player2NameDiv, 'active-player');
+
     if (currentPlayer === player1) {
-      // console.log('next player is player2');
       return (currentPlayer = player2);
     }
-    // console.log('next player is player1');
     return (currentPlayer = player1);
   };
 
@@ -126,13 +139,13 @@ const gameFlow = (() => {
     const boardIndex = e.target.dataset.index;
     // console.log('move called');
     gameboard.addMove(boardIndex, currentMoveSymbol);
-    nextPlayer();
     ++moveCount;
+    gameboard.checkWinner(currentMoveSymbol, moveCount);
+    switchPlayer();
     // Don't check for winner until it's even possible to win (5 moves min.)
     // if (moveCount >= 5) {
     //   gameboard.checkWinner(currentMoveSymbol);
     // }
-    gameboard.checkWinner(currentMoveSymbol, moveCount);
   };
 
   // Clicking the reset button clears the board
@@ -144,8 +157,15 @@ const gameFlow = (() => {
   });
 
   const reset = () => {
+    
+    player1NameDiv.classList.add('active-player');
+    player1MessageDiv.classList.remove('hide-message');
+    player2NameDiv.classList.remove('active-player');
+    player2MessageDiv.classList.add('hide-message');
+
     currentPlayer = player1;
     moveCount = 0;
+
   };
 
   return {
