@@ -19,7 +19,7 @@ const gameboard = (() => {
 
   const addMove = (e) => {
     const index = e.target.dataset.index;
-    const currentMoveSymbol = gameFlow.getCurrentMoveSymbol()
+    const currentMoveSymbol = gameFlow.getCurrentMoveSymbol();
     _boardMoves[index] = currentMoveSymbol;
     render();
     gameFlow.move();
@@ -53,13 +53,18 @@ const gameboard = (() => {
 const player = (name, moveSymbol) => {
   const getName = () => name;
   const getMoveSymbol = () => moveSymbol;
-  const updateName = (newName) => (name = newName);
+  const updateName = (newName) => {
+    name = newName;
+  };
+
   return {
     getName,
     getMoveSymbol,
     updateName,
   };
 };
+
+//
 
 // Game Flow Module
 const gameFlow = (() => {
@@ -72,39 +77,65 @@ const gameFlow = (() => {
   let moveCount = 0;
 
   const getCurrentPlayer = () => currentPlayer;
-  const getCurrentMoveSymbol = () => currentMoveSymbol;
+  const getCurrentMoveSymbol = () => currentPlayer.getMoveSymbol();
 
   const player1MessageDiv = document.querySelector('.player1-message');
   const player2MessageDiv = document.querySelector('.player2-message');
-  const player1NameDiv = document.querySelector('.player1-name');
-  const player2NameDiv = document.querySelector('.player2-name');
+  const player1NameInput = document.querySelector('.player1-name');
+  const player2NameInput = document.querySelector('.player2-name');
+
+  // fires when a page is loaded fully
+  window.addEventListener('load', (e) => {
+    player1NameInput.focus();
+  });
+
+  const hidePlayerMessage = (player) => {
+    if (player === player1) {
+      player1NameInput.classList.remove('active-player');
+      player1MessageDiv.classList.add('hide-message');
+      return;
+    }
+    player2NameInput.classList.remove('active-player');
+    player2MessageDiv.classList.add('hide-message');
+  };
+
+  const showPlayerMessage = (player, message, hideOtherPlayerMessage) => {
+    if (player === player1) {
+      player1MessageDiv.textContent = message;
+      player1NameInput.classList.add('active-player');
+      player1MessageDiv.classList.remove('hide-message');
+      if (hideOtherPlayerMessage) {
+        hidePlayerMessage(player2);
+      }
+      return;
+    }
+    player2MessageDiv.textContent = message;
+    player2NameInput.classList.add('active-player');
+    player2MessageDiv.classList.remove('hide-message');
+    if (hideOtherPlayerMessage) {
+      hidePlayerMessage(player1);
+    }
+  };
 
   const switchPlayer = () => {
-    console.log('switchPlayer called!');
-    const toggleClass = (target, className) => {
-      target.classList.toggle(className);
-    };
-
-    // Switch UI element showing 'Your Turn!' message
-    toggleClass(player1MessageDiv, 'hide-message');
-    toggleClass(player2MessageDiv, 'hide-message');
-    toggleClass(player1NameDiv, 'active-player');
-    toggleClass(player2NameDiv, 'active-player');
-
-    // Switch current player value
     if (currentPlayer === player1) {
       currentPlayer = player2;
     } else currentPlayer = player1;
-
-    return (currentMoveSymbol = currentPlayer.getMoveSymbol());
+    showPlayerMessage(currentPlayer, 'Your Turn!', true);
   };
 
   const isWinningMove = () => {
+    console.log('isWinningMove called');
+
     // Slice the moves into rows to more easily calculate winner (visually)
     const boardMoves = gameboard.getBoardMoves();
     const topRow = boardMoves.slice(0, 3);
     const middleRow = boardMoves.slice(3, 6);
     const bottomRow = boardMoves.slice(6, 9);
+
+    console.log(topRow);
+    console.log(middleRow);
+    console.log(bottomRow);
 
     const getColumnMoves = (index) => {
       const column = [topRow[index], middleRow[index], bottomRow[index]];
@@ -119,7 +150,7 @@ const gameFlow = (() => {
     const diagonalTopRight = [topRow[2], middleRow[1], bottomRow[0]];
 
     const isThreeInARow = (arr) => {
-      return arr.filter((move) => move === currentMoveSymbol).length === 3;
+      return arr.filter((move) => move === currentPlayer.getMoveSymbol()).length === 3;
     };
 
     let isWinner = false;
@@ -141,17 +172,14 @@ const gameFlow = (() => {
   };
 
   const showWinningMessage = () => {
-    if (currentPlayer === player1) {
-      player1MessageDiv.textContent = 'You Win!'
-    }
-    player2MessageDiv.textContent = 'You Win!'
-  }
+    showPlayerMessage(currentPlayer, 'You Win!', true);
+  };
 
   const move = () => {
     ++moveCount;
     if (isWinningMove()) {
-      console.log('isWinningMove returns true')
-      console.log(isWinningMove())
+      console.log('isWinningMove returns true');
+      console.log(isWinningMove());
       showWinningMessage();
       gameboard.endGame();
       return;
@@ -159,7 +187,10 @@ const gameFlow = (() => {
     if (moveCount < 9) {
       switchPlayer();
     }
-
+    if (moveCount === 9) {
+      showPlayerMessage(player1, `Tie!`, false);
+      showPlayerMessage(player2, `Tie!`, false);
+    }
   };
 
   // Clicking the reset button clears the board
@@ -172,14 +203,7 @@ const gameFlow = (() => {
 
   const reset = () => {
     // reset player 1
-    player1NameDiv.classList.add('active-player');
-    player1MessageDiv.textContent = 'Your Turn!'
-    player1MessageDiv.classList.remove('hide-message');
-
-    // reset player2
-    player2NameDiv.classList.remove('active-player');
-    player2MessageDiv.classList.add('hide-message');
-    player2MessageDiv.textContent = 'Your Turn!'
+    showPlayerMessage(player1, 'Your Turn!', true);
 
     // reset game flow
     currentPlayer = player1;
@@ -199,3 +223,4 @@ const gameFlow = (() => {
 
 gameboard.reset();
 gameboard.render();
+gameFlow.reset();
