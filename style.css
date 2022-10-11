@@ -37,13 +37,11 @@ input:focus::placeholder {
   align-items: start;
 }
 
-.player1-symbol,
-.player2-symbol {
+.player-symbol{
   font-size: 3rem;
 }
 
-.player1-name,
-.player2-name {
+.player-name {
   font-size: 2rem;
   width: 200px;
   text-align: center;
@@ -53,8 +51,7 @@ input:focus::placeholder {
   border-right: none;
 }
 
-.player1-message,
-.player2-message {
+.player-message{
   font-size: 1.25rem;
   font-weight: 600;
   color: #337ce0;
@@ -72,8 +69,7 @@ input:focus::placeholder {
 
 .hide-message,
 .active-player,
-.player1-message,
-.player2-message {
+.player-message{
   transition: all 80ms ease-in-out;
 }
 
