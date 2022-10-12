@@ -38,7 +38,7 @@ input:focus::placeholder {
   align-items: start;
 }
 
-.player-symbol{
+.player-symbol {
   font-size: 3rem;
 }
 
@@ -52,7 +52,7 @@ input:focus::placeholder {
   border-right: none;
 }
 
-.player-message{
+.player-message {
   font-size: 1.25rem;
   font-weight: 600;
   color: #337ce0;
@@ -67,12 +67,6 @@ input:focus::placeholder {
   border-bottom: #337ce0 solid 4px;
   opacity: 1;
 }
-
-/* .hide-message,
-.active-player,
-.player-message{
-  transition: all 80ms ease-in-out;
-} */
 
 .gameboard-container {
   display: grid;
@@ -99,12 +93,6 @@ input:focus::placeholder {
   justify-content: center;
   background-color: white;
 }
-
-/* Trying ways of making the background image the current move */
-/* .gameboard div:hover::after {
-  content: 'x';
-  opacity: .5;
-} */
 
 .reset-button {
   padding: 12px 20px;

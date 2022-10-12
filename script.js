@@ -17,7 +17,7 @@ const gameboard = (() => {
   };
 
   // Clicking on a tic tac toe square triggers a 'move'
-  const addClickListeners = () => {
+  const _addClickListeners = () => {
     _gameboardDivs.forEach((div) => {
       div.addEventListener('click', gameFlow.move, { once: true });
       div.addEventListener('click', (e) => {
@@ -27,8 +27,6 @@ const gameboard = (() => {
       });
     });
   };
-
-  // Hovering over a square displays the move you're about to make
 
   // Slice the moves into rows to more easily calculate winner (visually)
   const _getRows = () => {
@@ -100,12 +98,12 @@ const gameboard = (() => {
       div.addEventListener('mouseleave', _mouseLeaveHandler);
     });
   };
+
   const reset = () => {
     _clearHighlightMoves();
     _boardMoves = [];
     render();
-    // reset click listeners
-    addClickListeners();
+    _addClickListeners();
     _addHoverListeners();
   };
 
@@ -248,9 +246,9 @@ const gameFlow = (() => {
 
   const isWinningMove = () => {
     let isWinner = false;
-    const isThreeInARow = (arr) => {
+    const isThreeInARow = (moves) => {
       return (
-        arr.filter((move) => move === currentPlayer.getMoveSymbol()).length ===
+        moves.filter((move) => move === currentPlayer.getMoveSymbol()).length ===
         3
       );
     };
@@ -316,7 +314,7 @@ const gameFlow = (() => {
   });
 
   const reset = () => {
-    // reset player 1
+    // reset scoreboard
     scoreboardController.reset();
     // reset game flow
     currentPlayer = player1;
