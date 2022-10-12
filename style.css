@@ -6,6 +6,7 @@ body {
 
 h1 {
   text-align: center;
+  font-size: 3rem;
 }
 
 input:focus {
@@ -67,11 +68,11 @@ input:focus::placeholder {
   opacity: 1;
 }
 
-.hide-message,
+/* .hide-message,
 .active-player,
 .player-message{
   transition: all 80ms ease-in-out;
-}
+} */
 
 .gameboard-container {
   display: grid;
@@ -99,9 +100,15 @@ input:focus::placeholder {
   background-color: white;
 }
 
+/* Trying ways of making the background image the current move */
+/* .gameboard div:hover::after {
+  content: 'x';
+  opacity: .5;
+} */
+
 .reset-button {
   padding: 12px 20px;
-  background-color: #0b9f97;
+  background-color: #337ce0;
   font-weight: 600;
   border-radius: 4px;
   color: #fff;
@@ -115,5 +122,13 @@ input:focus::placeholder {
 }
 
 .winning {
-  color: #9f25d8;
+  color: #0dbe00;
+}
+
+.winning input {
+  border-bottom: #0dbe00 solid 4px;
+}
+
+.hover-preview {
+  color: #c1c1c1;
 }

@@ -7,12 +7,28 @@ const gameboard = (() => {
 
   const _gameboardDivs = document.querySelectorAll('.gameboard div');
 
+  const _mouseEnterHandler = (e) => {
+    e.target.textContent = gameFlow.getCurrentMoveSymbol();
+    e.target.classList.add('hover-preview');
+  };
+  const _mouseLeaveHandler = (e) => {
+    e.target.textContent = '';
+    e.target.classList.remove('hover-preview');
+  };
+
   // Clicking on a tic tac toe square triggers a 'move'
-  const addClickListeners = (elements) => {
-    elements.forEach((element) => {
-      element.addEventListener('click', gameFlow.move, { once: true });
+  const addClickListeners = () => {
+    _gameboardDivs.forEach((div) => {
+      div.addEventListener('click', gameFlow.move, { once: true });
+      div.addEventListener('click', (e) => {
+        e.target.removeEventListener('mouseenter', _mouseEnterHandler);
+        e.target.removeEventListener('mouseleave', _mouseLeaveHandler);
+        e.target.classList.remove('hover-preview');
+      });
     });
   };
+
+  // Hovering over a square displays the move you're about to make
 
   // Slice the moves into rows to more easily calculate winner (visually)
   const _getRows = () => {
@@ -21,9 +37,9 @@ const gameboard = (() => {
     _bottomRow = _boardMoves.slice(6, 9);
   };
 
-  const getRowMoves = (rowNumber) => {
+  const getRowMoves = (rowIndex) => {
     _getRows();
-    switch (rowNumber) {
+    switch (rowIndex) {
       case 0:
         return _topRow;
       case 1:
@@ -47,6 +63,7 @@ const gameboard = (() => {
     _getRows();
     return [_topRow[0], _middleRow[1], _bottomRow[2]];
   };
+
   const getDiagonalTopRight = () => {
     _getRows();
     return [_topRow[2], _middleRow[1], _bottomRow[0]];
@@ -64,39 +81,45 @@ const gameboard = (() => {
     render();
   };
 
+  // Apply different color to winning moves to make it easier to see on the board
   const highlightMoves = (moves) => {
     moves.map((move) => {
       document.querySelector(`[data-index="${move}"]`).classList.add('winning');
     });
   };
 
-  const clearHighlightMoves = () => {
+  const _clearHighlightMoves = () => {
     _gameboardDivs.forEach((div) => {
       div.classList.remove('winning');
     });
   };
 
-  const getBoardMoves = () => _boardMoves;
-
+  const _addHoverListeners = () => {
+    _gameboardDivs.forEach((div) => {
+      div.addEventListener('mouseenter', _mouseEnterHandler);
+      div.addEventListener('mouseleave', _mouseLeaveHandler);
+    });
+  };
   const reset = () => {
-    clearHighlightMoves();
+    _clearHighlightMoves();
     _boardMoves = [];
     render();
     // reset click listeners
-    addClickListeners(_gameboardDivs);
+    addClickListeners();
+    _addHoverListeners();
   };
 
   const endGame = () => {
-    _gameboardDivs.forEach((element) => {
-      element.removeEventListener('click', gameFlow.move, { once: true });
+    _gameboardDivs.forEach((div) => {
+      div.removeEventListener('click', gameFlow.move, { once: true });
+      div.removeEventListener('mouseenter', _mouseEnterHandler);
+      div.removeEventListener('mouseleave', _mouseLeaveHandler);
     });
   };
 
   return {
-    render,
     addMove,
     reset,
-    getBoardMoves,
     endGame,
     getColumnMoves,
     getRowMoves,
@@ -108,31 +131,24 @@ const gameboard = (() => {
 // End Gameboard Module
 
 // Player Factory
-const player = (name, moveSymbol, moveHistory) => {
+const player = (name, moveSymbol) => {
   const getName = () => name;
   const getMoveSymbol = () => moveSymbol;
   const updateName = (newName) => {
     name = newName;
   };
-  const getMoveHistory = () => moveHistory;
-  const addMove = (boardIndex) => moveHistory.push(boardIndex);
-
   return {
     getName,
     getMoveSymbol,
     updateName,
-    getMoveHistory,
-    addMove,
   };
 };
-
-//
 
 // Game Flow Module
 const gameFlow = (() => {
   // Players
-  let player1 = player('James', 'x', []);
-  let player2 = player('Laura', 'o', []);
+  let player1 = player('', 'x');
+  let player2 = player('', 'o');
 
   let currentPlayer = player1;
   let currentMoveSymbol = currentPlayer.getMoveSymbol();
@@ -147,47 +163,79 @@ const gameFlow = (() => {
     window.addEventListener('load', () => {
       player1NameInput.focus();
     });
-    const player1MessageDiv = document.querySelector(
-      '.player1>.player-message'
-    );
-    const player2MessageDiv = document.querySelector(
-      '.player2>.player-message'
-    );
+
     const player1NameInput = document.querySelector('.player1>.player-name');
+    const player1Message = document.querySelector('.player1>.player-message');
     const player2NameInput = document.querySelector('.player2>.player-name');
+    const player2Message = document.querySelector('.player2>.player-message');
+    const playerNames = document.querySelectorAll('.player-name');
+    const playerMessages = document.querySelectorAll('.player-message');
+    const resetButton = document.querySelector('.reset-button');
 
-    const hidePlayerMessage = (player) => {
-      if (player === player1) {
-        player1NameInput.classList.remove('active-player');
-        player1MessageDiv.classList.add('hide-message');
-        return;
-      }
+    // Update player name on blur
+    player1NameInput.addEventListener('blur', () => {
+      player1.updateName(player1NameInput.value);
+    });
+    player2NameInput.addEventListener('blur', () => {
+      player2.updateName(player2NameInput.value);
+    });
+
+    const _getActivePlayerMessage = () => {
+      return document.querySelector('.active-player').nextElementSibling;
+    };
+
+    // Hide one player message and show the other
+    const toggleTurnMessage = () => {
+      playerNames.forEach((player) => {
+        player.classList.toggle('active-player');
+      });
+      playerMessages.forEach((player) => {
+        player.classList.toggle('hide-message');
+      });
+    };
+
+    const displayWinningMessage = () => {
+      const message = _getActivePlayerMessage();
+      message.classList.add('winning');
+      message.textContent = 'You Win!';
+      resetButton.textContent = 'PLAY AGAIN';
+    };
+
+    const displayTieMessage = () => {
+      playerMessages.forEach((player) => {
+        player.textContent = 'Tie!';
+        player.classList.remove('hide-message');
+      });
+      playerNames.forEach((player) => player.classList.remove('active-player'));
+    };
+
+    const reset = () => {
+      resetButton.textContent = 'RESET';
+      // Hide Messages
+      playerMessages.forEach((player) => {
+        player.classList.add('hide-message');
+      });
+      player2Message.classList.add('hide-message');
+      // Set Player 1 Active
+      player1NameInput.classList.add('active-player');
+      // Remove Active Player style
       player2NameInput.classList.remove('active-player');
-      player2MessageDiv.classList.add('hide-message');
+      // Reset Message Text
+      playerMessages.forEach((player) => {
+        player.textContent = 'Your Turn!';
+      });
+      // Remove 'winning' green style from message
+      _getActivePlayerMessage().classList.remove('winning');
+      // Display Player 1 Message
+      player1Message.classList.remove('hide-message');
     };
 
-    const showPlayerMessage = (player, message, hideOtherPlayerMessage) => {
-      if (player === player1) {
-        player1MessageDiv.textContent = message;
-        player1NameInput.classList.add('active-player');
-        player1MessageDiv.classList.remove('hide-message');
-        if (hideOtherPlayerMessage) {
-          hidePlayerMessage(player2);
-        }
-        return;
-      }
-      player2MessageDiv.textContent = message;
-      player2NameInput.classList.add('active-player');
-      player2MessageDiv.classList.remove('hide-message');
-      if (hideOtherPlayerMessage) {
-        hidePlayerMessage(player1);
-      }
+    return {
+      toggleTurnMessage,
+      displayWinningMessage,
+      displayTieMessage,
+      reset,
     };
-
-    const showWinningMessage = () => {
-      showPlayerMessage(currentPlayer, 'You Win!', true);
-    };
-    return { showPlayerMessage, showWinningMessage };
   })();
 
   const switchPlayer = () => {
@@ -195,7 +243,7 @@ const gameFlow = (() => {
       currentPlayer = player2;
     } else currentPlayer = player1;
     currentMoveSymbol = currentPlayer.getMoveSymbol();
-    scoreboardController.showPlayerMessage(currentPlayer, 'Your Turn!', true);
+    scoreboardController.toggleTurnMessage();
   };
 
   const isWinningMove = () => {
@@ -207,6 +255,7 @@ const gameFlow = (() => {
       );
     };
     // See if there is a winning move on the board
+    // WinningMoves values are used to style the winning moves
     switch (true) {
       case isThreeInARow(gameboard.getRowMoves(0)):
         winningMoves = [0, 1, 2];
@@ -238,13 +287,12 @@ const gameFlow = (() => {
 
   const move = (e) => {
     const index = e.target.dataset.index;
-    currentPlayer.addMove(index);
     gameboard.addMove(index, currentMoveSymbol);
     ++moveCount;
     // Don't need to check for a winner until 5 moves
     if (moveCount >= 5) {
       if (isWinningMove()) {
-        scoreboardController.showWinningMessage();
+        scoreboardController.displayWinningMessage();
         gameboard.highlightMoves(winningMoves);
         gameboard.endGame();
         return;
@@ -255,8 +303,7 @@ const gameFlow = (() => {
       return;
     }
     if (moveCount === 9) {
-      scoreboardController.showPlayerMessage(player1, `Tie!`, false);
-      scoreboardController.showPlayerMessage(player2, `Tie!`, false);
+      scoreboardController.displayTieMessage();
     }
   };
 
@@ -270,8 +317,7 @@ const gameFlow = (() => {
 
   const reset = () => {
     // reset player 1
-    scoreboardController.showPlayerMessage(player1, 'Your Turn!', true);
-
+    scoreboardController.reset();
     // reset game flow
     currentPlayer = player1;
     currentMoveSymbol = currentPlayer.getMoveSymbol();
@@ -289,5 +335,4 @@ const gameFlow = (() => {
 })();
 
 gameboard.reset();
-gameboard.render();
 gameFlow.reset();
